@@ -9,7 +9,7 @@ Extend the sensor with a new property and constructor:
 LiveAircraftService liveAircraftService = null;
 public Senser(LiveAircraftService liveAircraftService)
 {
-		this.liveAircraftService = liveAircraftService;
+	this.liveAircraftService = liveAircraftService;
 }
 ```
 
