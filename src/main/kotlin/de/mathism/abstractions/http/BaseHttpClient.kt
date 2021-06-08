@@ -1,36 +1,28 @@
 package de.mathism.abstractions.http
 
-import de.mathism.abstractions.http.exception.HttpClientException
-import java.io.*
-import java.lang.reflect.Type
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
-import java.util.*
+import de.mathism.okhttp3.extensions.executeAsync
+import okhttp3.*
 import java.util.concurrent.CompletableFuture
 
 
+
 abstract class BaseHttpClient {
-    companion object {
-        const val GENERIC_ERROR: String = "Could not parse the response from server."
-    }
+    val client = OkHttpClient()
 
     open var baseUri: String = ""
-    private val client: HttpClient = HttpClient.newHttpClient()
 
-    private fun httpGetRequest(url: String): HttpRequest = HttpRequest.newBuilder()
-        .uri(URI.create(baseUri + url))
-        .header("Content-Type", "application/json")
-        .GET()
+    open fun httpGetRequest(url: String): Request = Request.Builder()
+        .url(url)
+        .addHeader("Content-Type", "application/json")
+        .get()
         .build()
 
-    fun getAsync(uri: String): CompletableFuture<String> {
-
+    open fun getAsync(uri: String): CompletableFuture<String> {
         val getRequest = httpGetRequest(uri)
         return client
-            .sendAsync(getRequest, HttpResponse.BodyHandlers.ofString())
-            .thenApply(HttpResponse<String>::body)
+            .newCall(getRequest)
+            .executeAsync()
+            .thenApply { x -> x.body?.string() }
     }
 }
 

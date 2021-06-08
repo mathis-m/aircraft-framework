@@ -54,5 +54,4 @@ class AllStateVectorsClient @Inject constructor(
 
     fun getStateVectorsByIcao(icao: String): CompletableFuture<JSONArray> = getStateVectorsByIcaoAsString(icao)
         .thenApply { makeJsonArray(it) }
-
 }
