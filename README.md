@@ -1,5 +1,6 @@
 # aircraft-framework
 Opensky Api connector with integration into https://github.com/N1k145/LeafletMap.
+Latest release can be found here: https://github.com/mathis-m/aircraft-framework/releases/tag/1.0-ALPHA
 
 ## Hochschule Esslingen integration approach:
 As this framework is evolved from a project at HS Esslingen I want to give some advice in order to integrate it.
