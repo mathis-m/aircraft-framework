@@ -49,11 +49,11 @@ cfMapLoadState.whenComplete((state, throwable) -> {
         mapView.setView(new LatLong(52.5172, 13.4040), 9);
         mapView.addCustomMarker("plane", "icons/basicplane.png");
 
-        // setup Map Viewport listerner in order to set the area that you want to fetch plains for:
+        // setup Map Viewport listerner in order to update the area that you want to fetch plains for:
         ViewPortExtensionsKt.onViewportChange(mapView, finalLiveAircraftService::updateMapBounds);
-        // initially emit Viewport for fetching
+        // initially emit Viewport for fetching because no viewport change will hapen if you dont move the map
         MapBoundsExtensionsKt.emitMapBounds(mapView);
-        // initialize rotateable markers
+        // initialize rotateable markers internals
         RotateableMarkerExtensionsKt.initRotatableMarkersJs(mapView);
     }
 });
