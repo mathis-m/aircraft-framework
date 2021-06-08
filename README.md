@@ -61,12 +61,15 @@ cfMapLoadState.whenComplete((state, throwable) -> {
 
 Create Markers with Rotation:
 ```java
+// ... init latLong and icao variable 
 int angle = 0;
-RotateableMarkerExtensionsKt.addMarker(mapView, marker, trak.intValue());
+Marker marker = new Marker(latLong, icao, "plane", 1);
+RotateableMarkerExtensionsKt.addMarker(mapView, marker, angle);
 ```
 
 Rotate existing Marker:
 ```java
+// ... init marker variable to update
 int angle = 0;
 RotateableMarkerExtensionsKt.rotate(marker, angle);
 ```
