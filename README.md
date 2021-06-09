@@ -50,7 +50,7 @@ cfMapLoadState.whenComplete((state, throwable) -> {
         mapView.addCustomMarker("plane", "icons/basicplane.png");
 
         // setup Map Viewport listerner in order to update the area that you want to fetch plains for:
-        ViewPortExtensionsKt.onViewportChange(mapView, finalLiveAircraftService::updateMapBounds);
+        ViewPortExtensionsKt.onViewportChange(mapView, liveAircraftService::updateMapBounds);
         // initially emit Viewport for fetching because no viewport change will hapen if you dont move the map
         MapBoundsExtensionsKt.emitMapBounds(mapView);
         // initialize rotateable markers internals
