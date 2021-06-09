@@ -12,7 +12,7 @@ abstract class BaseHttpClient {
     open var baseUri: String = ""
 
     open fun httpGetRequest(url: String): Request = Request.Builder()
-        .url(url)
+        .url(baseUri + url)
         .addHeader("Content-Type", "application/json")
         .get()
         .build()

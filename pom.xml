@@ -28,6 +28,7 @@
         <guice.version>5.0.1</guice.version>
         <javafx-web.version>16</javafx-web.version>
         <json.version>20210307</json.version>
+        <okhttp.version>4.9.1</okhttp.version>
     </properties>
 
     <dependencies>
@@ -72,7 +73,7 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.9.1</version>
+            <version>${okhttp.version}</version>
         </dependency>
     </dependencies>
 
