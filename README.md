@@ -5,14 +5,6 @@ Latest release can be found here: https://github.com/mathis-m/aircraft-framework
 ## Hochschule Esslingen integration approach:
 As this framework is evolved from a project at HS Esslingen I want to give some advice in order to integrate it.
 ### Prepare Senser
-Extend the sensor with a new property and constructor:
-```java
-LiveAircraftService liveAircraftService = null;
-public Senser(LiveAircraftService liveAircraftService)
-{
-	this.liveAircraftService = liveAircraftService;
-}
-```
 
 #### Using Queue Approach
 Extend the sensor with a new property and constructor:
@@ -38,35 +30,10 @@ Using a Queue to store the fetched aircraft feed and then iterating over it seem
 It might make more sense to just use the latest feed because UI should only display the latest fetched results.
 This brings me to the point where the Queue is obsolete, so I introduced a behavioral observable approach here.
 By means, you can subscribe to the aircraft feed by providing a lambda, the lambda will be called with the latest emitted value and further on with each newly received value.
-In addition, we do not need the Sensor to be run on a thread, instead it will just encapsulate the spread of the aircraft feed further into your pipeline.  
-In order to not bloat memory you have to initialize the `LiveAircraftService` with a 4th argument `false` in order to disable queuing received aircraft feeds:
-```
-Logger logger = new Logger();
-BaseOpenskyApiClient baseClient = new BaseOpenskyApiClient(baseUrl);
-AllStateVectorsClient client = new AllStateVectorsClient(baseClient, logger);
-LiveAircraftService liveAircraftService = new LiveAircraftService(5000, client, logger, false);
-```
 
-Sensor does not need to be a `Runnable` so remove the inheritance.
-
-Example updated sensor:
+Example integration:
 ````java
-public class Senser2 extends SimpleObservable<JSONArray> {
-    LiveAircraftService liveAircraftService;
 
-    public Senser2(LiveAircraftService liveAircraftService) {
-        this.liveAircraftService = liveAircraftService;
-    }
-
-    public void spreadAircraftFeedIntoObservable() {
-        liveAircraftService.subscribeToAircraftFeed(aircraftFeed -> {
-            for (int i = 0; i < aircraftFeed.length(); i++) {
-                this.setChanged();
-                notifyObservers(aircraftFeed.getJSONArray(i));
-            }
-        });
-    }
-}
 ````
 
 ### Using the extensions provided by the Framework
@@ -74,22 +41,14 @@ define base url to use:
 ```java
 static String baseUrl = "https://opensky-network.org/api";
 ```
-initialize the sensor with `LiveAircraftService` instance, by using one of the above stated approaches:
+initialize the sensor with `LiveAircraftService` instance:
 
 ```java
 Logger logger = new Logger();
 BaseOpenskyApiClient baseClient = new BaseOpenskyApiClient(baseUrl);
 AllStateVectorsClient client = new AllStateVectorsClient(baseClient, logger);
 LiveAircraftService liveAircraftService = new LiveAircraftService(5000, client, logger);
-
-// just showcasing the two approaches here pick the one you prefer
-if(!liveAircraftService.getUseStorage()) {
-    senser2 = new Senser2(liveAircraftService);
-    senser2.spreadAircraftFeedIntoObservable();
-    senser2.addObserver(messer);
-} else {
-    senser = new Senser(liveAircraftService);
-}
+senser = new Senser(liveAircraftService);
 ```
 create update bounds handler and start fetching aircrafts when first bounds are emitted:
 ```java
