@@ -15,7 +15,7 @@ public Senser(LiveAircraftService liveAircraftService)
 ```
 
 Use the `LiveAircraftService` within the Sensor Runnable `run()` method in order to do it better than the Profs did in the provided base solution:
-The service is Timer based and does not rely on in memory filtering(like PlaneDataServer provided by Prof, which is bad because the api needs to evaluate all planes arround the world). Instead it just requests planes for a given area.
+The service is based on scheduledthreadpoolexecutor and does not rely on in memory filtering(like PlaneDataServer provided by Prof, which is bad because the api needs to evaluate all planes arround the world). Instead it just requests planes for a given area.
 This is a much more stable and consistent solution.
 
 ```java
