@@ -5,6 +5,7 @@ import de.mathism.leaflet.dto.MapBounds
 import de.mathism.opensky.api.AllStateVectorsClient
 import de.mathism.opensky.extensions.toOpenskyBoundingBox
 import org.json.JSONArray
+import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -15,16 +16,6 @@ class LiveAircraftService(
     private val allStateVectorsClient: AllStateVectorsClient,
     private val logger: ILogger
 ) {
-    constructor(
-        fetchDelay: Long,
-        allStateVectorsClient: AllStateVectorsClient,
-        logger: ILogger,
-        useStorage: Boolean
-    ) : this(fetchDelay, allStateVectorsClient, logger) {
-        this.useStorage = useStorage
-    }
-
-    var useStorage: Boolean = true
     private var currentMapBounds: MapBounds? = null
 
     private var threadPool = ScheduledThreadPoolExecutor(2)
@@ -54,26 +45,6 @@ class LiveAircraftService(
         return null
     }
 
-    private val subs: MutableCollection<(JSONArray) -> Unit> = mutableListOf()
-    private val latestVal: JSONArray? = null
-
-    interface JSONArrayDelegate {
-        fun accept(i: JSONArray)
-    }
-
-    fun subscribeToAircraftFeed(delegate: JSONArrayDelegate) {
-        subs.add(delegate::accept)
-        if (latestVal != null) {
-            delegate.accept(latestVal)
-        }
-    }
-
-    private fun notifyAllSubs(planes: JSONArray) {
-        subs.forEach {
-            it(planes)
-        }
-    }
-
     open inner class FetchAndBroadcastTask : Runnable {
         override fun run() {
             val bounds = currentMapBounds ?: return
@@ -81,10 +52,7 @@ class LiveAircraftService(
             allStateVectorsClient
                 .getStateVectorsByBounds(bounds.toOpenskyBoundingBox())
                 .thenAccept {
-                    if (useStorage) {
-                        jsonQ.add(it)
-                    }
-                    notifyAllSubs(it)
+                    jsonQ.add(it)
                 }
         }
     }

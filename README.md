@@ -5,8 +5,6 @@ Latest release can be found here: https://github.com/mathis-m/aircraft-framework
 ## Hochschule Esslingen integration approach:
 As this framework is evolved from a project at HS Esslingen I want to give some advice in order to integrate it.
 ### Prepare Senser
-
-#### Using Queue Approach
 Extend the sensor with a new property and constructor:
 ```java
 LiveAircraftService liveAircraftService = null;
@@ -25,16 +23,7 @@ planeArray = liveAircraftService.getPlaneArray();
 if(planeArray == null)
 	continue;
 ```
-#### Using Behavioral Subject approach (specific type of observable)
-Using a Queue to store the fetched aircraft feed and then iterating over it seems a bit odd.
-It might make more sense to just use the latest feed because UI should only display the latest fetched results.
-This brings me to the point where the Queue is obsolete, so I introduced a behavioral observable approach here.
-By means, you can subscribe to the aircraft feed by providing a lambda, the lambda will be called with the latest emitted value and further on with each newly received value.
 
-Example integration:
-````java
-
-````
 
 ### Using the extensions provided by the Framework
 define base url to use:
@@ -49,25 +38,11 @@ BaseOpenskyApiClient baseClient = new BaseOpenskyApiClient(baseUrl);
 AllStateVectorsClient client = new AllStateVectorsClient(baseClient, logger);
 LiveAircraftService liveAircraftService = new LiveAircraftService(5000, client, logger);
 senser = new Senser(liveAircraftService);
+liveAircraftService.run();
 ```
-create update bounds handler and start fetching aircrafts when first bounds are emitted:
-```java
 
-private boolean firstBoundsReceived = false;
-private void onViewportChange(MapBounds bounds) {
-    liveAircraftService.updateMapBounds(bounds);
-
-    if(!firstBoundsReceived){
-        firstBoundsReceived = true;
-        liveAircraftService.run();
-    }
-}
-```
 initialize the map:
 ```java
-// create update bounds handler
-
-// later on init Leaflet map
 cfMapLoadState.whenComplete((state, throwable) -> {
     if (state == Worker.State.SUCCEEDED) {
         mapIsInitialized = true;
@@ -75,7 +50,7 @@ cfMapLoadState.whenComplete((state, throwable) -> {
         mapView.addCustomMarker("plane", "icons/basicplane.png");
 
         // setup Map Viewport listerner in order to update the area that you want to fetch plains for:
-        ViewPortExtensionsKt.onViewportChange(mapView, this::onViewportChange);
+        ViewPortExtensionsKt.onViewportChange(mapView, liveAircraftService::updateMapBounds);
         // initially emit Viewport for fetching because no viewport change will hapen if you dont move the map
         MapBoundsExtensionsKt.emitMapBounds(mapView);
         // initialize rotateable markers internals
