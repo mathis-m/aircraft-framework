@@ -18,7 +18,7 @@ class LiveAircraftService(
 ) {
     private var currentMapBounds: MapBounds? = null
 
-    private val threadPool = ScheduledThreadPoolExecutor(2)
+    private var threadPool = ScheduledThreadPoolExecutor(2)
     private val jsonQ = LinkedBlockingQueue<JSONArray>()
 
     fun run() {
@@ -29,6 +29,7 @@ class LiveAircraftService(
     fun stop() {
         logger.logDebug("Stopping fetching aircraft sets.")
         threadPool.shutdown()
+        threadPool = ScheduledThreadPoolExecutor(2)
     }
 
     fun updateMapBounds(bounds: MapBounds) {
