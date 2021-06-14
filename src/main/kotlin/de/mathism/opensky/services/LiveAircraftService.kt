@@ -7,6 +7,8 @@ import de.mathism.opensky.extensions.toOpenskyBoundingBox
 import org.json.JSONArray
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 
 class LiveAircraftService(
@@ -16,18 +18,17 @@ class LiveAircraftService(
 ) {
     private var currentMapBounds: MapBounds? = null
 
-    private var timer: Timer? = null
+    private val threadPool = ScheduledThreadPoolExecutor(2)
     private val jsonQ = LinkedBlockingQueue<JSONArray>()
 
     fun run() {
         logger.logDebug("Starting fetching aircraft sets from opensky-api.")
-        timer = Timer()
-        timer?.scheduleAtFixedRate(FetchAndBroadcastTask(), 0, fetchDelay)
+        threadPool.scheduleAtFixedRate(FetchAndBroadcastTask(), 0, fetchDelay, TimeUnit.MILLISECONDS)
     }
 
     fun stop() {
         logger.logDebug("Stopping fetching aircraft sets.")
-        timer?.cancel()
+        threadPool.shutdown()
     }
 
     fun updateMapBounds(bounds: MapBounds) {
@@ -43,7 +44,7 @@ class LiveAircraftService(
         return null
     }
 
-    open inner class FetchAndBroadcastTask : TimerTask() {
+    open inner class FetchAndBroadcastTask : Runnable {
         override fun run() {
             val bounds = currentMapBounds ?: return
 
