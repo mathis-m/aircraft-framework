@@ -5,7 +5,7 @@
 
     <groupId>de.mathism</groupId>
     <artifactId>aicraftframework</artifactId>
-    <version>1.3-ALPHA</version>
+    <version>1.2-ALPHA</version>
     <packaging>jar</packaging>
 
     <name>de.mathism aicraftframework</name>
@@ -102,11 +102,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <args>
-                        <arg>-Xno-optimized-callable-references</arg>
-                    </args>
-                </configuration>
             </plugin>
         </plugins>
     </build>
